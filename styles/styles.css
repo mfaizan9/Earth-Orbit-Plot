@@ -1,0 +1,287 @@
+/* ============================================================================
+   Earth Orbit Plot -- sim-specific styles ONLY.
+   Shared palette / layout classes come from foundation/kl-unl.css (untouched).
+   Nothing here edits or forks the foundation look; these are additive.
+   ============================================================================ */
+
+/* Comfortable, zoomable body text (>=1.125rem floor, rem-based). */
+body {
+  font-size: 1.125rem;
+  line-height: 1.5;
+}
+
+/* Single-column stack of panels: diagram first, then controls. Reads correctly
+   on desktop, iPad and phone portrait; overrides the foundation 2-col grid for
+   THIS sim only (via the extra .eop-layout class, never by editing kl-unl.css). */
+.eop-layout.app-layout {
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  padding: 0.75rem;
+}
+
+.eop-panel {
+  padding-bottom: 1rem;
+}
+
+.eop-panel .panel__heading {
+  font-size: 1.25rem;
+}
+
+/* ---- Plot viewport / stage ------------------------------------------------ */
+.eop-canvas-wrap {
+  line-height: 0;
+  padding: 0 1rem 0.5rem;
+}
+
+/* Fixed aspect ratio box (stage is 780 x 530 internal units). */
+.eop-viewport {
+  position: relative;
+  width: 100%;
+  max-width: 780px;
+  margin: 0 auto;
+  aspect-ratio: 780 / 530;
+}
+
+/* The stage is a fixed-size coordinate space, CSS-scaled to fit the viewport.
+   All overlay children are positioned in these 780x530 units. */
+.eop-stage {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 780px;
+  height: 530px;
+  transform-origin: top left;
+  transform: scale(var(--eop-scale, 1));
+}
+
+.eop-canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 780px;
+  height: 530px;
+}
+
+/* Overlay is the same coordinate space; individual items are absolutely placed.
+   overflow visible so callouts may extend slightly past the plot area. */
+.eop-overlay {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 780px;
+  height: 530px;
+  overflow: visible;
+  font-family: "Sans-Serif", Arial, Helvetica, sans-serif;
+  /* Restore normal line-height: the .panel__canvas-wrap ancestor sets it to 0
+     (to strip canvas whitespace) and that would collapse our overlay text. */
+  line-height: 1.35;
+}
+
+.eop-overlay > div { position: absolute; }
+
+/* ---- Axis titles ---------------------------------------------------------- */
+.eop-axis-title {
+  font-size: 15px;
+  color: var(--foreground-color, #1a1a1a);
+  white-space: nowrap;
+}
+
+.eop-axis-title--x {
+  left: 110px;
+  top: 495px;
+  width: 600px;
+  text-align: center;
+}
+
+/* Y title rotated up the left edge, centred on the plot height. */
+.eop-axis-title--y {
+  left: 0;
+  top: 250px;
+  width: 0;
+  height: 0;
+}
+.eop-axis-title--y span {
+  position: absolute;
+  transform: translate(-50%, -50%) rotate(-90deg);
+  transform-origin: center;
+  left: 28px;
+  top: 0;
+  white-space: nowrap;
+}
+
+/* ---- Tick labels (MathJax numbers) --------------------------------------- */
+.eop-tick {
+  position: absolute;
+  font-size: 14px;
+  color: var(--foreground-color, #1a1a1a);
+}
+.eop-tick--x { transform: translateX(-50%); text-align: center; }
+.eop-tick--y { transform: translateY(-50%); text-align: right; }
+.eop-tick .MathJax { margin: 0 !important; }
+
+/* ---- Equation box --------------------------------------------------------- */
+.eop-eqnbox {
+  left: 150px;
+  top: 92px;
+  width: 232px;
+  padding: 0.5rem 1rem;
+  background: #fbf3c9;
+  border: 2px solid #e0a800;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+.eop-eqn {
+  text-align: center;
+  font-size: 15px;
+  color: var(--foreground-color, #1a1a1a);
+}
+.eop-eqn + .eop-eqn { margin-top: 0.25rem; }
+
+/* ---- Cursor marker on the curve ------------------------------------------ */
+.eop-cursor-dot {
+  width: 11px;
+  height: 11px;
+  margin: -5.5px 0 0 -5.5px;
+  border-radius: 50%;
+  background: var(--alert-color-r, #ea351f);
+  border: 2px solid #1a1a1a;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+/* ---- Callouts (readout + special points) --------------------------------- */
+.eop-callout {
+  position: absolute;
+  min-width: 6rem;
+  max-width: 15rem;
+  padding: 0.5rem 0.75rem;
+  background: #ffffff;
+  border: 1px solid #767676;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  color: var(--foreground-color, #1a1a1a);
+  font-size: 14px;
+  pointer-events: none;
+  will-change: opacity;
+}
+
+.eop-callout__row {
+  display: grid;
+  grid-template-columns: 1.4rem 1fr;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+.eop-callout__row span:first-child { font-weight: 600; }
+.eop-callout__row + .eop-callout__row { margin-top: 0.15rem; }
+
+.eop-callout__title {
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+  text-align: center;
+}
+
+/* Speech-bubble tail: a small square rotated 45deg on the side facing the dot. */
+.eop-callout__tail {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: inherit;
+  border: inherit;
+  border-radius: 2px;
+}
+.eop-callout--above .eop-callout__tail {
+  bottom: -7px;
+  left: var(--tail-x, 50%);
+  transform: translateX(-50%) rotate(45deg);
+  border-top: none;
+  border-left: none;
+}
+.eop-callout--below .eop-callout__tail {
+  top: -7px;
+  left: var(--tail-x, 50%);
+  transform: translateX(-50%) rotate(45deg);
+  border-bottom: none;
+  border-right: none;
+}
+
+.eop-readout { min-width: 7rem; }
+
+/* Special callouts with a photo: image beside the text block. */
+.eop-callout--photo {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem;
+  align-items: center;
+  max-width: 340px;
+}
+.eop-callout--photo.eop-callout--photoleft { grid-template-columns: 1fr auto; }
+.eop-callout__photo {
+  width: 150px;
+  height: auto;
+  display: block;
+  border: 1px solid #767676;
+}
+.eop-callout__body { min-width: 8.5rem; }
+
+/* ---- Controls ------------------------------------------------------------- */
+.eop-controls { padding: 0.25rem 1.25rem 0.5rem; }
+
+.eop-help {
+  margin: 0 0 1rem;
+  max-width: 46rem;
+  line-height: 1.5;
+}
+
+.eop-slider-block { margin-bottom: 1.25rem; }
+.eop-slider-block .control-row__label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+}
+.eop-slider {
+  width: 100%;
+  max-width: 34rem;
+  height: 2.25rem;
+  cursor: pointer;
+}
+.eop-slider-readout {
+  margin: 0.4rem 0 0;
+  font-size: 1rem;
+  color: var(--foreground-color, #1a1a1a);
+  min-height: 1.4em;
+}
+
+.eop-jump { border: 0; margin: 0; padding: 0; }
+.eop-jump__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.eop-jump-btn {
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  padding: 0.4rem 0.9rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--button-foreground-color, #ffffff);
+  background: var(--button-background-color, #005a9c);
+  border: 1px solid var(--border-color, #767676);
+  border-radius: 4px;
+  cursor: pointer;
+}
+.eop-jump-btn:hover,
+.eop-jump-btn:focus-visible {
+  filter: brightness(0.92);
+}
+
+/* ---- Responsive: phone portrait ------------------------------------------ */
+@media (max-width: 40rem) {
+  .eop-layout.app-layout { padding: 0.5rem; }
+  .eop-jump__row { flex-direction: column; }
+  .eop-jump-btn { width: 100%; }
+}
+
+/* ---- Reduced motion: fades resolve instantly (handled in JS too) ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .eop-callout { transition: none; }
+}
